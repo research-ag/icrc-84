@@ -72,10 +72,9 @@ The values may change over time.
 
 ```candid "Type definitions" +=
 type TokenInfo = record {
+  allowance_fee : Amount;
   deposit_fee : Amount;
   withdrawal_fee : Amount;
-  min_deposit : Amount;
-  min_withdrawal : Amount;
 };
 ```
 
@@ -89,30 +88,12 @@ But still, the amount of the `deposit_fee` can differ from the underlying transf
 The `withdrawal_fee` can but does not have to coincide with the transfer fee of the underlying ICRC-1 token.
 It is charged for each withdrawal that a user makes and that results in a successful ICRC-1 transfer.
 
-`min_deposit` is the minimal deposit that is considered valid by the service.
-Any balance in a deposit account that is below this value is ignored.
-For example, say for the ICP token a service has defined `deposit_fee = 20_000` and `min_deposit = 100_000`.
-If the user makes a deposit of exactly `100_000` e8s
-then `20_000` will be deducted and the user will be credited
-with `80_000` e8s. 
-The service will empty out the user's deposit account.
-As a result, the service will take in `90_000` e8s because the ICP ledger's transfer fee is `10_000` e8s.
-If instead the user had made a deposit of `99,999` then it would have been ignored.
-
-`min_deposit` must be larger than `deposit_fee`.
-For example, if `deposit_fee = 20_000` then `min_deposit` must be at least `20_001`.
-
-`min_withdrawal` is the minimal withdrawal that a user can make.
-Any withdrawal request below this amount will be denied.
-`min_withdrawal` must be larger than `withdrawal_fee`.
-For example, say for the ICP token a service has defined `withdrawal_fee = 20_000` and `min_withdrawal = 100_000`.
-If the user requests a withdrawal of exactly `100_000` e8s
-then the user will be debited with `100_000` e8s
-and the service will initiate a transfer of `80_000` e8s to the user.
-As a result, the service will pay `90_000` e8s because the ICP ledger's transfer fee is `10_000` e8s.
+`allowance_fee` specifies the fee that is deducted when the user makes a deposit via allowance. 
+The `allowance_fee` can but does not have to coincide with the transfer fee of the underlying ICRC-1 token.
+It is charged for each successful deposit via allowance.
 
 Note: The service will never make transfers of amount 0 on the ICRC-1 ledgers even though ICRC-1 technically allows them.
-This is true for consolidation of deposits and for withdrawals.
+This is true for consolidation of deposits, for drawing from allowances and for making withdrawals.
 
 The token info can be queried with the following method.
 
@@ -126,7 +107,7 @@ If the specified `Token` is not supported by the service then the call will thro
 
 Credits are tracked by the service on a per-token basis.
 The unit for credits is the same as the unit of the corresponsing ICRC-1 token.
-However, credits are of slighly different nature than token balances even though the use the same unit.
+However, credits are of slighly different nature than token balances even though they use the same unit.
 Credits are virtual and for greater flexibility we allow credits to go negative, hence we use type `int`.
 
 A user can query his personal credit balance with the following method.
@@ -308,6 +289,7 @@ type DepositArgs = record {
   token : Token;
   amount : Amount;
   from : Account;
+  expected_fee : opt nat;
 };
 
 type Account = record {
@@ -320,6 +302,7 @@ type Account = record {
 `amount` is the amount that is to be drawn from the allowance into the service.
 Any ledger transfer fees will be added on the user account's side.
 `from` is the ICRC-1 account from which the funds are to be drawn via allowance.
+`expected_fee` should be equal to the `deposit_fee` from the token's `TokenInfo` or else the call will fail.
 
 If successful, the call returns:
 
@@ -332,6 +315,7 @@ type DepositResponse = variant {
   Ok : DepositResult;
   Err : variant {
     AmountBelowMinimum : record {};
+    BadFee : record { expected_fee : nat };
     CallLedgerError : record { message : text };
     TransferError : record { message : text }; // insufficient allowance or insufficient funds
   };
@@ -345,10 +329,11 @@ type DepositResult = record {
 ```
 
 Possible errors that can occur are:
-* the amount can be lower than the minimum that the service has defined (AmountBelowMinimum)
+* the amount can be lower than the fees
 * the ICRC-1 ledger may not support ICRC-2 (CallLedgerError)
 * the inter-canister call to the ICRC-2 ledger can fail entirely (CallLedgerError)
 * the call can go through but the transfer can fail (TransferError)
+* the supplied `expected_fee` can differ from the real fee (BadFee)
 
 ## Withdrawal
 
@@ -363,6 +348,7 @@ type WithdrawArgs = record {
   to : Account;
   amount : Amount;
   token : Token;
+  expected_fee : opt nat;
 };
 ```
 
@@ -370,6 +356,7 @@ The `WithdrawArgs` record specifies
 the `Token` to be withdrawn,
 the destination account
 and the `Amount` to be taken from the caller's credits.
+`expected_fee` should be equal to the `withdrawal_fee` from the token's `TokenInfo` or else the call will fail.
 
 If the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
 
@@ -385,19 +372,22 @@ type WithdrawResult = variant {
     amount : Amount;
   };
   Err : variant {
-    InsufficientCredit : record {};
     AmountBelowMinimum : record {};
+    BadFee : record { expected_fee : nat };
     CallLedgerError : record { message : text };
+    InsufficientCredit : record {};
   };
 };
 ```
 
 If the user's credit is below the requested `Amount` then `Err = InsufficientCredit` is returned.
 
-If the requested `Amount` is smaller than the Token parameter `min_withdrawal` then `Err = AmountBelowMinimum` is returned.
+If the requested `Amount` is smaller than the fees then `Err = AmountBelowMinimum` is returned.
 
 If the downstream call to the ICRC-1 ledger fails with an async error then `Err = CallLedgerError` is returned.
 The accompanying text message should indicate the actual async error that happened.
+
+If the supplied `expected_fee` does not match the real fee then `Err = BadFee` is returned.  
 
 Otherwise the `Ok` variant is returned. 
 It contains the `txid` on the underlying ICRC-1 ledger of the withdrawal transfer.
