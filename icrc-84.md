@@ -12,11 +12,31 @@ A token is uniquely identified by the principal of its ICRC-1 ledger.
 type Token = principal;
 ```
 
-The list of accepted tokens can be queried with the following function.
+The list of accepted tokens can be queried (in pages) with the following function.
 
 ```candid "Methods" +=
-icrc84_supported_tokens : () -> (vec Token) query;
+icrc84_supported_tokens : (nat, opt nat) -> (nat, nat, vec Token) query;
 ```
+
+The supported tokens are numbered internally from 0 through N-1.
+The first argument is the first index included in the requested page and the second argument is the size of the page.
+A second argument of `null` means the page has no end, i.e. it goes all the way to the end.
+
+The first returned value is a "counter" which increases every time the list of supported tokens changes.
+This counter allows the caller to know whether the retrieved pages are consistent with each other or not.
+If the caller received responses including different counter values then the caller should discard the results with the lower counter value and start to query the pages again.
+This should be repeated until the caller has all pages available with the same counter value.
+
+The counter value is not guaranteed to be increase by increments of 1.
+For example, the counter could be a timestamp that increases in arbitrary increments.
+
+There is no guarantee on the order of the returned Tokens across different counter values.
+At the next counter value the order can have changed in unpredictable ways.
+
+The second returned value is the number N of supported tokens.
+The caller can use it to query all pages concurrently.
+
+The third returned value is the page.
 
 ## Amounts
 

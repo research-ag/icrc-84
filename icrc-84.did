@@ -87,7 +87,7 @@ service : () -> {
   principalToSubaccount : (principal) -> (opt blob) query;
 
   // public queries
-  icrc84_supported_tokens : () -> (vec Token) query;
+  icrc84_supported_tokens : (nat, opt nat) -> (nat, nat, vec Token) query;
   icrc84_token_info : (Token) -> (TokenInfo) query;
 
   // private queries
