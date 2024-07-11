@@ -9,7 +9,9 @@ The same service can accept deposits in one or more different ICRC-1 tokens.
 A token is uniquely identified by the principal of its ICRC-1 ledger.
 
 ```candid "Type definitions" +=
-type Token = principal;
+type Token = record { 
+  ledger : principal 
+};
 ```
 
 The list of accepted tokens can be queried with the following function.

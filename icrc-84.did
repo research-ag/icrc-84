@@ -1,4 +1,7 @@
-type Token = principal;
+type Token = record { 
+  ledger : principal 
+};
+
 type Amount = nat;
 
 type TokenInfo = record {
