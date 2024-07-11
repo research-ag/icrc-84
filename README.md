@@ -1,2 +1,2 @@
 # ICRC-84
-Specification for a new ICRC-84 proposal
+ICRC standard for deposits and withdrawals from financial services
