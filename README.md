@@ -1,3 +1,6 @@
+[![mops](https://oknww-riaaa-aaaam-qaf6a-cai.raw.ic0.app/badge/mops/icrc-84)](https://mops.one/icrc-84)
+[![documentation](https://oknww-riaaa-aaaam-qaf6a-cai.raw.ic0.app/badge/documentation/icrc-84)](https://mops.one/icrc-84/docs)
+
 # ICRC-84
 
 ICRC standard for deposits and withdrawals from financial services
