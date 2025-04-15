@@ -1,0 +1,16 @@
+{
+  "canisters": {
+    "actor_test": {
+      "main": "actor.mo",
+      "type": "motoko"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "dfx": "0.24.3",
+  "version": 1
+}
