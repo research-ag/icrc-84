@@ -113,7 +113,6 @@ module {
   };
 
   public type ICRC84 = actor {
-    principalToSubaccount : shared query (Principal) -> async ?Blob;
     // public queries
     icrc84_supported_tokens : shared query () -> async [Principal];
     icrc84_token_info : shared query (Principal) -> async TokenInfo;
