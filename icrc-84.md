@@ -110,16 +110,24 @@ The unit for credits is the same as the unit of the corresponsing ICRC-1 token.
 However, credits are of slighly different nature than token balances even though they use the same unit.
 Credits are virtual and for greater flexibility we allow credits to go negative, hence we use type `int`.
 
-A user can query his personal credit balance with the following method.
+A user can query his personal credit balances with the following method.
 
 ```candid "Methods" +=
-icrc84_credit : (Token) -> (int) query;
+icrc84_query : (vec Token) -> (vec record {
+    Token;
+    record {
+        credit : int;
+        tracked_deposit : opt Amount;
+    };
+}) query;
 ```
 
-If the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
+If one of the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
 
 Credit balances are private.
 The above method returns the balance of the caller.
+
+`tracked_deposit` field is [explained](#trackedbalance) below.
 
 The service is not expected to distinguish non-existing users from existing ones with a credit balance of 0.
 If the caller is not known to the service,
@@ -127,19 +135,9 @@ has never used the service before,
 or has never used the service for the given Token before
 then the method simply returns a value of zero.
 
-For greater efficiency and to reduce query load, 
-there is a method to obtain a user's credits in all tokens at once.
-
-```candid "Methods" +=
-icrc84_all_credits : () -> (vec record { Token; int }) query;
-```
-
-The returned vector contains all tokens for which the caller has a non-zero credit balance.
-The tokens with a zero credit balance are stripped from the response.
-
-As before, a non-existing user is handled the same as a user with
-a zero balance in all tokens.
-In both cases an empty vector is returned.
+Returned balances are filtered using provided tokens vector argument.
+Canister returns only balances for provided tokens when argument length is greater than zero.
+Empty vector argument would result in returning all the balances across supported tokens.
 
 ## Notification
 
@@ -233,24 +231,19 @@ then it may want to also expand the response record with a field describing the 
 ## Tracked balance
 
 It was said above that `deposit_inc` returned by `notify` is the difference in deposit balance relative to the last known (= "tracked") deposit balance.
-The tracked deposit balance can be queried with the following method.
+The tracked deposit balance can be queried alongside with the credit with the following method.
 
 ```candid "Methods" +=
-icrc84_trackedDeposit : (Token) -> (BalanceResult) query;
+icrc84_query : (vec Token) -> (vec record {
+    Token;
+    record {
+        credit : int;
+        tracked_deposit : opt Amount;
+    };
+}) query;
 ```
 
-If the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
-
-Otherwise the method the returns the following type.
-
-```candid "Type definitions" +=
-type BalanceResult = variant {
-  Ok : Amount;
-  Err : variant {
-    NotAvailable : record { message : text };
-  };
-};
-```
+If one of the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
 
 The `Amount` returned is the currently known balance that the caller has in the specified `Token`.
 
@@ -264,7 +257,7 @@ Of course, the user can call `notify` directly but the two query calls are consi
 Hence this query method is provided.
 
 If any concurrent downstream calls to the ledger are underway that could affect the returned `Amount`
-then the service returns the `Err = NotAvailable` variant.
+then the service returns null.
 This indicates to the user to try again later.
 For example, the downstream call could be a balance query (triggered by `notify`)
 or a consolidation transfer that relates to the caller's deposit account for the specified `Token`.
