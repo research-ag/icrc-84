@@ -76,9 +76,6 @@ type DepositResponse = variant {
 };
 
 service : () -> {
-  // helper function
-  principalToSubaccount : (principal) -> (opt blob) query;
-
   // public queries
   icrc84_supported_tokens : () -> (vec Token) query;
   icrc84_token_info : (Token) -> (TokenInfo) query;

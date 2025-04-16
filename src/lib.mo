@@ -54,4 +54,80 @@ module {
     |> Blob.fromArray(_)
     |> ?Principal.fromBlob(_);
   };
+
+  public type TokenInfo = {
+    allowance_fee : Nat;
+    deposit_fee : Nat;
+    withdrawal_fee : Nat;
+  };
+
+  public type NotifyArgs = { token : Principal };
+
+  public type NotifyResponse = {
+    #Ok : {
+      deposit_inc : Nat;
+      credit_inc : Nat;
+      credit : Int;
+    };
+    #Err : {
+      #CallLedgerError : { message : Text };
+      #NotAvailable : { message : Text };
+    };
+  };
+
+  public type DepositArgs = {
+    token : Principal;
+    amount : Nat;
+    from : { owner : Principal; subaccount : ?Blob };
+    expected_fee : ?Nat;
+  };
+
+  public type DepositResponse = {
+    #Ok : { txid : Nat; credit_inc : Nat; credit : Int };
+    #Err : {
+      #AmountBelowMinimum : {};
+      #CallLedgerError : { message : Text };
+      #TransferError : { message : Text };
+      #BadFee : { expected_fee : Nat };
+    };
+  };
+
+  public type WithdrawArgs = {
+    to : { owner : Principal; subaccount : ?Blob };
+    amount : Nat;
+    token : Principal;
+    expected_fee : ?Nat;
+  };
+
+  public type WithdrawResponse = {
+    #Ok : {
+      txid : Nat;
+      amount : Nat;
+    };
+    #Err : {
+      #BadFee : { expected_fee : Nat };
+      #CallLedgerError : { message : Text };
+      #InsufficientCredit : {};
+      #AmountBelowMinimum : {};
+    };
+  };
+
+  public type ICRC84 = actor {
+    // public queries
+    icrc84_supported_tokens : shared query () -> async [Principal];
+    icrc84_token_info : shared query (Principal) -> async TokenInfo;
+    // private queries
+    icrc84_query : shared query ([Principal]) -> async ([(
+      Principal,
+      {
+        credit : Int;
+        tracked_deposit : ?Nat;
+      },
+    )]);
+    // updates
+    icrc84_notify : shared (NotifyArgs) -> async NotifyResponse;
+    icrc84_deposit : shared (DepositArgs) -> async DepositResponse;
+    icrc84_withdraw : shared (WithdrawArgs) -> async WithdrawResponse;
+  };
+
 };

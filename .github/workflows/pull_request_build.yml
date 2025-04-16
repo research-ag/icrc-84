@@ -1,0 +1,41 @@
+name: App build
+on:
+  pull_request:
+    types: [synchronize, opened, reopened, ready_for_review, unlabeled]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install mops
+        uses: ZenVoich/setup-mops@v1.3.1
+
+      - name: Make sure moc is installed
+        run: mops toolchain bin moc || mops toolchain use moc latest
+
+      - name: Run mops tests
+        run: |
+          mops test
+
+      - name: Install dfx
+        uses: dfinity/setup-dfx@main
+
+      - name: Build test actor
+        working-directory: ./test
+        run: |
+          dfxvm install 0.24.3 && dfx build --check
+
+      - name: Get didc
+        run: |
+          release=$(curl --silent "https://api.github.com/repos/dfinity/candid/releases/latest" | awk -F\" '/tag_name/ { print $4 }')
+          mkdir -p /home/runner/bin
+          curl -fsSL https://github.com/dfinity/candid/releases/download/$release/didc-linux64 > /home/runner/bin/didc
+          chmod +x /home/runner/bin/didc
+          echo "/home/runner/bin" >> $GITHUB_PATH
+
+      - name: Check public did file against icrc84 standard
+        run: didc check test/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
