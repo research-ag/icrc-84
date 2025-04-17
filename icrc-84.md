@@ -110,36 +110,33 @@ The unit for credits is the same as the unit of the corresponsing ICRC-1 token.
 However, credits are of slighly different nature than token balances even though they use the same unit.
 Credits are virtual and for greater flexibility we allow credits to go negative, hence we use type `int`.
 
-A user can query his personal credit balance with the following method.
+A user can query his personal credit balances with the following method.
 
 ```candid "Methods" +=
-icrc84_credit : (Token) -> (int) query;
+icrc84_query : (vec Token) -> (vec record {
+    Token;
+    record {
+        credit : int;
+        tracked_deposit : opt Amount;
+    };
+}) query;
 ```
 
-If the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
+An empty vector in the argument means that all supported tokens are queried
+and a non-empty vector means that only the tokens in the vector are queried.
+
+If one of the specified `Token` in the vector is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
 
 Credit balances are private.
 The above method returns the balance of the caller.
+
+`tracked_deposit` field is [explained](#trackedbalance) below.
 
 The service is not expected to distinguish non-existing users from existing ones with a credit balance of 0.
 If the caller is not known to the service,
 has never used the service before,
 or has never used the service for the given Token before
 then the method simply returns a value of zero.
-
-For greater efficiency and to reduce query load, 
-there is a method to obtain a user's credits in all tokens at once.
-
-```candid "Methods" +=
-icrc84_all_credits : () -> (vec record { Token; int }) query;
-```
-
-The returned vector contains all tokens for which the caller has a non-zero credit balance.
-The tokens with a zero credit balance are stripped from the response.
-
-As before, a non-existing user is handled the same as a user with
-a zero balance in all tokens.
-In both cases an empty vector is returned.
 
 ## Notification
 
@@ -163,7 +160,6 @@ type NotifyArg = record {
   token : Token;
 };
 ```
-
 
 A call to `icrc84_notify` notifies the service about a deposit into the deposit account of the caller for the specified token.
 The service is free to expand this record with additional optional fields to include an action that is to be done with the newly detected deposits.
@@ -233,26 +229,13 @@ then it may want to also expand the response record with a field describing the 
 ## Tracked balance
 
 It was said above that `deposit_inc` returned by `notify` is the difference in deposit balance relative to the last known (= "tracked") deposit balance.
-The tracked deposit balance can be queried with the following method.
+The tracked deposit balance can be queried by the `icrc84_query` method described above whose return type contains a record field
 
-```candid "Methods" +=
-icrc84_trackedDeposit : (Token) -> (BalanceResult) query;
+```candid
+tracked_deposit : opt Amount;
 ```
 
-If the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
-
-Otherwise the method the returns the following type.
-
-```candid "Type definitions" +=
-type BalanceResult = variant {
-  Ok : Amount;
-  Err : variant {
-    NotAvailable : record { message : text };
-  };
-};
-```
-
-The `Amount` returned is the currently known balance that the caller has in the specified `Token`.
+The `Amount` returned here is the currently known balance that the caller has in the specified `Token`.
 
 For example, say a deposit flow has been interrupted during the notification step.
 The user does not know if the attempted call to `notify` has gone through or not.
@@ -261,10 +244,10 @@ and can query the service to obtain the known deposit balance.
 If they differ then the user must call `notify` again.
 
 Of course, the user can call `notify` directly but the two query calls are considered cheaper and faster.
-Hence this query method is provided.
+Hence `tracked_deposit` is provided in the query method.
 
 If any concurrent downstream calls to the ledger are underway that could affect the returned `Amount`
-then the service returns the `Err = NotAvailable` variant.
+then the service returns `null` in the `tracked_deposit` field.
 This indicates to the user to try again later.
 For example, the downstream call could be a balance query (triggered by `notify`)
 or a consolidation transfer that relates to the caller's deposit account for the specified `Token`.
@@ -438,9 +421,3 @@ But allowances due not always work, for example if
 * the ICRC-1 ledger does not support ICRC-2
 * the user's wallet does not support ICRC-2 (currently most wallets)
 * the user wants to make a deposit directly from an exchange
-
-## Open questions
-
-Shall we offer a function for a user to "burn" his credits?
-
-Shall we offer a function for a user to retrieve history such as a log of credit/debit events?
