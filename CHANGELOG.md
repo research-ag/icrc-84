@@ -1,5 +1,10 @@
 # Icrc-84 changelog
 
+## 0.1.0
+
+* Include Motoko type and actor definitions
+* Update documentation
+
 ## 0.0.3
 
 * Add spec
