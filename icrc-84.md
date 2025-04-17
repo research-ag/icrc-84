@@ -122,7 +122,10 @@ icrc84_query : (vec Token) -> (vec record {
 }) query;
 ```
 
-If one of the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
+An empty vector in the argument means that all supported tokens are queried
+and a non-empty vector means that only the tokens in the vector are queried.
+
+If one of the specified `Token` in the vector is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
 
 Credit balances are private.
 The above method returns the balance of the caller.
@@ -134,10 +137,6 @@ If the caller is not known to the service,
 has never used the service before,
 or has never used the service for the given Token before
 then the method simply returns a value of zero.
-
-Returned balances are filtered using provided tokens vector argument.
-Canister returns only balances for provided tokens when argument length is greater than zero.
-Empty vector argument would result in returning all the balances across supported tokens.
 
 ## Notification
 
@@ -161,7 +160,6 @@ type NotifyArg = record {
   token : Token;
 };
 ```
-
 
 A call to `icrc84_notify` notifies the service about a deposit into the deposit account of the caller for the specified token.
 The service is free to expand this record with additional optional fields to include an action that is to be done with the newly detected deposits.
@@ -231,21 +229,13 @@ then it may want to also expand the response record with a field describing the 
 ## Tracked balance
 
 It was said above that `deposit_inc` returned by `notify` is the difference in deposit balance relative to the last known (= "tracked") deposit balance.
-The tracked deposit balance can be queried alongside with the credit with the following method.
+The tracked deposit balance can be queried alongside with the credit with the `icrc84_query` method described above which returned a record field
 
-```candid "Methods" +=
-icrc84_query : (vec Token) -> (vec record {
-    Token;
-    record {
-        credit : int;
-        tracked_deposit : opt Amount;
-    };
-}) query;
+```candid
+tracked_deposit : opt Amount;
 ```
 
-If one of the specified `Token` is not supported by the service then the call will throw the async error `canister_reject` with error message `"UnknownToken"`.
-
-The `Amount` returned is the currently known balance that the caller has in the specified `Token`.
+The `Amount` returned here is the currently known balance that the caller has in the specified `Token`.
 
 For example, say a deposit flow has been interrupted during the notification step.
 The user does not know if the attempted call to `notify` has gone through or not.
@@ -254,10 +244,10 @@ and can query the service to obtain the known deposit balance.
 If they differ then the user must call `notify` again.
 
 Of course, the user can call `notify` directly but the two query calls are considered cheaper and faster.
-Hence this query method is provided.
+Hence `tracked_deposit` is provided in the query method.
 
 If any concurrent downstream calls to the ledger are underway that could affect the returned `Amount`
-then the service returns null.
+then the service returns `null` in the `tracked_deposit` field.
 This indicates to the user to try again later.
 For example, the downstream call could be a balance query (triggered by `notify`)
 or a consolidation transfer that relates to the caller's deposit account for the specified `Token`.
