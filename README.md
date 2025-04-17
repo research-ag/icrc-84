@@ -34,7 +34,10 @@ The type `ICRC84` can be used as actor type on the caller side effortlessly.
 To declare actor type with ICRC84 and custom functions, you can use:
 
 ```motoko
+  import ICRC84 "mo:icrc-84";
+
   let canister : (ICRC84.ICRC84 and actor {
     custom_func : shared () -> async ();
-  }) = actor (icrc84CanisterId);
+  }) = actor ("<canister id>" : Text);
 ```
+
