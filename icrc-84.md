@@ -229,7 +229,7 @@ then it may want to also expand the response record with a field describing the 
 ## Tracked balance
 
 It was said above that `deposit_inc` returned by `notify` is the difference in deposit balance relative to the last known (= "tracked") deposit balance.
-The tracked deposit balance can be queried alongside with the credit with the `icrc84_query` method described above which returned a record field
+The tracked deposit balance can be queried by the `icrc84_query` method described above whose return type contains a record field
 
 ```candid
 tracked_deposit : opt Amount;
@@ -421,9 +421,3 @@ But allowances due not always work, for example if
 * the ICRC-1 ledger does not support ICRC-2
 * the user's wallet does not support ICRC-2 (currently most wallets)
 * the user wants to make a deposit directly from an exchange
-
-## Open questions
-
-Shall we offer a function for a user to "burn" his credits?
-
-Shall we offer a function for a user to retrieve history such as a log of credit/debit events?
