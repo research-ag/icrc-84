@@ -38,4 +38,6 @@ jobs:
           echo "/home/runner/bin" >> $GITHUB_PATH
 
       - name: Check public did file against icrc84 standard
-        run: didc check test/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
+        run: |
+          didc check test/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
+          didc check icrc-84.did test/.dfx/local/canisters/actor_test/actor_test.did
