@@ -1,4 +1,4 @@
-import Principal "mo:base/Principal";
+import Principal "mo:core/Principal";
 import ICRC84 "../src"
 
 do {

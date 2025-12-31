@@ -1,7 +1,7 @@
-import Array "mo:base/Array";
-import Blob "mo:base/Blob";
-import Nat8 "mo:base/Nat8";
-import Principal "mo:base/Principal";
+import Array "mo:core/Array";
+import Blob "mo:core/Blob";
+import Nat8 "mo:core/Nat8";
+import Principal "mo:core/Principal";
 
 module {
   type Subaccount = Blob;
@@ -12,7 +12,7 @@ module {
   /// It is placed right-aligned into the 32 bytes of the Subaccount,
   /// prepended with a length byte and then left-padded with zero bytes.
   public func toSubaccount(p : Principal) : Subaccount {
-    let bytes = Blob.toArray(Principal.toBlob(p));
+    let bytes = Blob.toArray(p.toBlob());
     let size = bytes.size();
 
     assert size <= 29;
@@ -46,7 +46,7 @@ module {
         i += 1;
       };
       if (i == 32) return null;
-      (i + 1, Nat8.toNat(bytes[i]));
+      (i + 1, bytes[i].toNat());
     };
 
     if (start + size != 32) return null;
