@@ -28,7 +28,7 @@ jobs:
         run: dfx --version
 
       - name: Build test actor
-        working-directory: ./test
+        working-directory: ./example
         run: dfx build --check
 
       - name: Get didc
@@ -41,5 +41,5 @@ jobs:
 
       - name: Check public did file against icrc84 standard
         run: |
-          didc check test/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
+          didc check example/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
           didc check icrc-84.did test/.dfx/local/canisters/actor_test/actor_test.did
