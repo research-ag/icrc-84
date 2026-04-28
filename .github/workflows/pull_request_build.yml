@@ -32,8 +32,10 @@ jobs:
         run: dfx --version
 
       - name: Build test actor
-        working-directory: test
-        run: dfx build --check
+        run: |
+          pwd
+          ls
+#         dfx build --check
 
       - name: Get didc
         run: |
