@@ -153,9 +153,9 @@ module {
   /// - `amount`: amount to draw from the allowance into the service.
   ///   Any underlying ledger transfer fee is charged on top, on the
   ///   `from` account's side.
-  /// - `from`: ICRC-1 account from which the funds are drawn. The
-  ///   spender of the allowance must be the caller's deposit account
-  ///   (subaccount equal to `toSubaccount(caller)` of the service).
+  /// - `from`: ICRC-1 account from which the funds are drawn. The spender of
+  ///   the allowance must be the the service canister's account with 
+  ///   subaccount `toSubaccount(caller)`
   /// - `expected_fee`: must equal the current `allowance_fee` from the
   ///   token's `TokenInfo`; otherwise the call returns
   ///   `#Err(#BadFee)`. Pass `null` to skip the check.
