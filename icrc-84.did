@@ -66,7 +66,7 @@ type DepositResult = record {
 };
 
 type DepositResponse = variant {
-  Ok : DepositResult;
+  Oki : DepositResult;
   Err : variant {
     AmountBelowMinimum : record {};
     BadFee : record { expected_fee : nat };
