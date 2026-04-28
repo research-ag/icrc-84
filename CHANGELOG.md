@@ -12,7 +12,7 @@
 ## 0.0.3
 
 * Add spec
-* Addd did file
+* Add did file
 
 ## 0.0.2 (failed update)
 

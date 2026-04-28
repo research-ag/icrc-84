@@ -106,7 +106,7 @@ If the specified `Token` is not supported by the service then the call will thro
 ## Credits
 
 Credits are tracked by the service on a per-token basis.
-The unit for credits is the same as the unit of the corresponsing ICRC-1 token.
+The unit for credits is the same as the unit of the corresponding ICRC-1 token.
 However, credits are of slightly different nature than token balances even though they use the same unit.
 Credits are virtual and for greater flexibility we allow credits to go negative, hence we use type `int`.
 
@@ -411,12 +411,12 @@ The disadvantages are:
 We prefer the approach that requires less state.
 It makes the service leaner and easier to handle upgrades.
 
-### What are the benfits of using `notify` vs allowances?
+### What are the benefits of using `notify` vs allowances?
 
 Allowances are simpler to process for the service. 
 Overall transaction fees are lower if an allowance is used for multiple deposits.
 
-But allowances due not always work, for example if
+But allowances do not always work, for example if
 
 * the ICRC-1 ledger does not support ICRC-2
 * the user's wallet does not support ICRC-2 (currently most wallets)
