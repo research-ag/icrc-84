@@ -5,11 +5,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
       - name: Install mops
         uses: caffeinelabs/setup-mops@v1
@@ -18,18 +17,11 @@ jobs:
         run: mops toolchain bin moc || mops toolchain use moc latest
 
       - name: Run mops tests
-        run: |
-          mops test
+        run: mops test
 
-      - name: Install dfx
-        uses: dfinity/setup-dfx@main
-
-      - name: Confirm successful installation
-        run: dfx --version
-
-      - name: Build test actor
-        working-directory: ./test
-        run: dfx build --check
+      - name: Build example actor
+        working-directory: example
+        run: $(mops toolchain bin moc) $(mops sources) actor.mo --idl
 
       - name: Get didc
         run: |
@@ -41,5 +33,21 @@ jobs:
 
       - name: Check public did file against icrc84 standard
         run: |
-          didc check test/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
-          didc check icrc-84.did test/.dfx/local/canisters/actor_test/actor_test.did
+          didc check example/actor.did icrc-84.did
+          didc check icrc-84.did example/actor.did
+
+  format:
+    name: Check formatting
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install prettier plugin
+        run: npm install --save-dev prettier prettier-plugin-motoko
+
+      - name: Run prettier check
+        run: npx prettier --check --plugin=prettier-plugin-motoko **/*.mo

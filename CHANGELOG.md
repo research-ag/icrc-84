@@ -1,5 +1,10 @@
 # Icrc-84 changelog
 
+## 0.1.2
+
+* Bump core dependency to 2.5.0
+* Add doc strings
+
 ## 0.1.1
 
 * Switch from base to core 2.0.0
@@ -12,7 +17,7 @@
 ## 0.0.3
 
 * Add spec
-* Addd did file
+* Add did file
 
 ## 0.0.2 (failed update)
 

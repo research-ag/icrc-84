@@ -14,4 +14,3 @@ do {
   assert ICRC84.toSubaccount(p) == b;
   assert ICRC84.toPrincipal(b) == ?p;
 };
- 
