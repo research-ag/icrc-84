@@ -8,10 +8,10 @@ license = "Apache-2.0"
 files = ['**/*.mo', '**/*.did', '**/*.md']
 
 [dependencies]
-core = "2.0.0"
+core = "2.5.0"
 
 [toolchain]
-moc = "1.0.0"
+moc = "1.6.0"
 
 [requirements]
 moc = "1.0.0"

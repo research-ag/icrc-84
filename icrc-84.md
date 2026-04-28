@@ -81,7 +81,7 @@ type TokenInfo = record {
 `deposit_fee` specifies the fee that is deducted each time a deposit is detected and consolidated into the service's main account.
 The `deposit_fee` can but does not have to coincide with the transfer fee of the underlying ICRC-1 token.
 However, the _application_ of the `deposit_fee` should coincide with actual transfers happening.
-For example, if the user makes multiple installments into the deposit account and then the service manages to consolidates them all at once into its main account then the `deposit_fee` should be charged only once.
+For example, if the user makes multiple installments into the deposit account and then the service manages to consolidate them all at once into its main account then the `deposit_fee` should be charged only once.
 But still, the amount of the `deposit_fee` can differ from the underlying transfer fee charged by the ledger.
 
 `withdrawal_fee` specifies the fee that is deducted when the user makes a withdrawal. 
@@ -107,7 +107,7 @@ If the specified `Token` is not supported by the service then the call will thro
 
 Credits are tracked by the service on a per-token basis.
 The unit for credits is the same as the unit of the corresponsing ICRC-1 token.
-However, credits are of slighly different nature than token balances even though they use the same unit.
+However, credits are of slightly different nature than token balances even though they use the same unit.
 Credits are virtual and for greater flexibility we allow credits to go negative, hence we use type `int`.
 
 A user can query his personal credit balances with the following method.
