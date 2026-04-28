@@ -1,6 +1,6 @@
 [package]
 name = "icrc-84"
-version = "0.1.1"
+version = "0.1.2"
 description = "ICRC-84 support library"
 repository = "https://github.com/research-ag/icrc-84"
 keywords = [ "icrc-84", "principal", "subaccount", "embedding", "icrc-1" ]
