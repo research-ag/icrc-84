@@ -19,15 +19,9 @@ jobs:
       - name: Run mops tests
         run: mops test
 
-      - name: Install dfx
-        uses: dfinity/setup-dfx@main
-
-      - name: Confirm successful installation
-        run: dfx --version
-
       - name: Build example actor
         working-directory: example
-        run: dfx build --check
+        run: $(mops toolchain bin moc) $(mops sources) actor.mo --idl
 
       - name: Get didc
         run: |
@@ -39,8 +33,8 @@ jobs:
 
       - name: Check public did file against icrc84 standard
         run: |
-          didc check example/.dfx/local/canisters/actor_test/actor_test.did icrc-84.did
-          didc check icrc-84.did example/.dfx/local/canisters/actor_test/actor_test.did
+          didc check example/actor.did icrc-84.did
+          didc check icrc-84.did example/actor.did
 
   format:
     name: Check formatting
