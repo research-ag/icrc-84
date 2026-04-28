@@ -32,7 +32,7 @@ jobs:
         run: dfx --version
 
       - name: Build test actor
-        working-directory: ./example
+        working-directory: example
         run: dfx build --check
 
       - name: Get didc
