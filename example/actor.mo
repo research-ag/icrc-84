@@ -1,6 +1,6 @@
 import Runtime "mo:core/Runtime";
 
-import Lib "../src";
+import Lib "mo:icrc-84";
 
 // an actor file to test library ICRC84 against did declaration.
 // if it implements something differently from library type, it won't compile with an error about "_check" variable type
