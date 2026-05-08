@@ -50,4 +50,4 @@ jobs:
         run: npm install --save-dev prettier prettier-plugin-motoko
 
       - name: Run prettier check
-        run: npx prettier --check --plugin=prettier-plugin-motoko **/*.mo
+        run: npx prettier --check --plugin=prettier-plugin-motoko '**/*.{mo,json,md}'

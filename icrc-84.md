@@ -84,11 +84,11 @@ However, the _application_ of the `deposit_fee` should coincide with actual tran
 For example, if the user makes multiple installments into the deposit account and then the service manages to consolidate them all at once into its main account then the `deposit_fee` should be charged only once.
 But still, the amount of the `deposit_fee` can differ from the underlying transfer fee charged by the ledger.
 
-`withdrawal_fee` specifies the fee that is deducted when the user makes a withdrawal. 
+`withdrawal_fee` specifies the fee that is deducted when the user makes a withdrawal.
 The `withdrawal_fee` can but does not have to coincide with the transfer fee of the underlying ICRC-1 token.
 It is charged for each withdrawal that a user makes and that results in a successful ICRC-1 transfer.
 
-`allowance_fee` specifies the fee that is deducted when the user makes a deposit via allowance. 
+`allowance_fee` specifies the fee that is deducted when the user makes a deposit via allowance.
 The `allowance_fee` can but does not have to coincide with the transfer fee of the underlying ICRC-1 token.
 It is charged for each successful deposit via allowance.
 
@@ -172,7 +172,7 @@ type NotifyResult = variant {
     deposit_inc : Amount;
     credit_inc : Amount;
     credit : int;
-  }; 
+  };
   Err : variant {
     CallLedgerError : record { message : text };
     NotAvailable : record { message : text };
@@ -188,8 +188,8 @@ The error message is not specified by this standard but is recommended to descri
 
 The service is not expected to make concurrent downstream calls for the same balance.
 Hence, if the same caller calls `notify` twice concurrently for the same `Token` then the second call will return `Err = NotAvailable`.
-This error generally means the `notify` method is currently blocked for this caller and token, and that it should be retried later. 
-The additional text error message returned with `NotAvailable` is not specified by this standard. 
+This error generally means the `notify` method is currently blocked for this caller and token, and that it should be retried later.
+The additional text error message returned with `NotAvailable` is not specified by this standard.
 
 If the downstream call succeeds then the method will return the `Ok` record.
 
@@ -215,10 +215,10 @@ If multiple deposit transactions happened concurrently with calls to `notify` th
 For example, say the ledger fee is 10 and the initial credit balance of the user is 0.
 If a deposit of 20 tokens is made, then `notify` is called, then another 20 tokens are deposited and `notify` is called again
 then the two `notify` responses are:
-`{ deposit_inc = 20; credit_inc = 10; credit = 10 }`, 
+`{ deposit_inc = 20; credit_inc = 10; credit = 10 }`,
 `{ deposit_inc = 20; credit_inc = 10; credit = 20 }`.
 If the first `notify` arrives _after_ the second deposit then two responses are:
-`{ deposit_inc = 40; credit_inc = 30; credit = 30 }`, 
+`{ deposit_inc = 40; credit_inc = 30; credit = 30 }`,
 `{ deposit_inc = 0; credit_inc = 0; credit = 30 }`.
 In this case the deposit fee is applied only once because the service sees it as one deposit.
 
@@ -289,9 +289,9 @@ Any ledger transfer fees will be added on the user account's side.
 
 If successful, the call returns:
 
-* the ICRC-1 ledger txid of the transfer that happened 
-* the incremental credit that resulted out of this call
-* the absolute credit balance after the incremental credit has been applied 
+- the ICRC-1 ledger txid of the transfer that happened
+- the incremental credit that resulted out of this call
+- the absolute credit balance after the incremental credit has been applied
 
 ```candid "Type definitions" +=
 type DepositResponse = variant {
@@ -312,11 +312,12 @@ type DepositResult = record {
 ```
 
 Possible errors that can occur are:
-* the amount can be lower than the fees
-* the ICRC-1 ledger may not support ICRC-2 (CallLedgerError)
-* the inter-canister call to the ICRC-2 ledger can fail entirely (CallLedgerError)
-* the call can go through but the transfer can fail (TransferError)
-* the supplied `expected_fee` can differ from the real fee (BadFee)
+
+- the amount can be lower than the fees
+- the ICRC-1 ledger may not support ICRC-2 (CallLedgerError)
+- the inter-canister call to the ICRC-2 ledger can fail entirely (CallLedgerError)
+- the call can go through but the transfer can fail (TransferError)
+- the supplied `expected_fee` can differ from the real fee (BadFee)
 
 ## Withdrawal
 
@@ -325,7 +326,9 @@ The user can initiate a withdrawal with the following method.
 ```candid "Methods" +=
 icrc84_withdraw : (WithdrawArgs) -> (WithdrawResult);
 ```
+
 with
+
 ```candid "Type definitions" +=
 type WithdrawArgs = record {
   to : Account;
@@ -370,9 +373,9 @@ If the requested `Amount` is smaller than the fees then `Err = AmountBelowMinimu
 If the downstream call to the ICRC-1 ledger fails with an async error then `Err = CallLedgerError` is returned.
 The accompanying text message should indicate the actual async error that happened.
 
-If the supplied `expected_fee` does not match the real fee then `Err = BadFee` is returned.  
+If the supplied `expected_fee` does not match the real fee then `Err = BadFee` is returned.
 
-Otherwise the `Ok` variant is returned. 
+Otherwise the `Ok` variant is returned.
 It contains the `txid` on the underlying ICRC-1 ledger of the withdrawal transfer.
 It contains the `Amount` that was actually received by the user.
 In general, this `Amount` will differ from the requested amount
@@ -391,7 +394,7 @@ Restricting the caller makes it easier to control or charge for that cost.
 ### Why is the credit balance access-controlled?
 
 Deposits are publicly visible on the ICRC-1 ledger.
-Any observer can conclude from those deposit transactions 
+Any observer can conclude from those deposit transactions
 to corresponding incoming credits for the user.
 But from there on further changes to the credit balance, increase or decrease, depend on the usage of the service by the user.
 For example, in a DEX the credit changes would correspond to bids placed or trades executed.
@@ -405,19 +408,19 @@ hence the consolidation step is not needed which saves fees.
 
 The disadvantages are:
 
-* The memo field is too short to hold an entire principal, hence the service has to keep a map from user principal to an id used in the memo field.
-* The service needs to store the already claimed txids forever so that they cannot be claimed a second time.
+- The memo field is too short to hold an entire principal, hence the service has to keep a map from user principal to an id used in the memo field.
+- The service needs to store the already claimed txids forever so that they cannot be claimed a second time.
 
 We prefer the approach that requires less state.
 It makes the service leaner and easier to handle upgrades.
 
 ### What are the benefits of using `notify` vs allowances?
 
-Allowances are simpler to process for the service. 
+Allowances are simpler to process for the service.
 Overall transaction fees are lower if an allowance is used for multiple deposits.
 
 But allowances do not always work, for example if
 
-* the ICRC-1 ledger does not support ICRC-2
-* the user's wallet does not support ICRC-2 (currently most wallets)
-* the user wants to make a deposit directly from an exchange
+- the ICRC-1 ledger does not support ICRC-2
+- the user's wallet does not support ICRC-2 (currently most wallets)
+- the user wants to make a deposit directly from an exchange

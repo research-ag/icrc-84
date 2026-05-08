@@ -17,15 +17,15 @@ The module currently contains:
 
 The functions to embed a Principal to and from an ICRC-1 subaccount (32 bytes) are:
 
-* `toSubaccount : Principal -> Subaccount`
-* `toPrincipal : Subaccount -> ?Principal`
+- `toSubaccount : Principal -> Subaccount`
+- `toPrincipal : Subaccount -> ?Principal`
 
 ### Argument and return types
 
-* `TokenInfo`
-* `NotifyArgs` and `NotifyResponse`
-* `DepositArgs` and `DepositResponse`
-* `WithdrawArgs` and `WithdrawResponse`
+- `TokenInfo`
+- `NotifyArgs` and `NotifyResponse`
+- `DepositArgs` and `DepositResponse`
+- `WithdrawArgs` and `WithdrawResponse`
 
 ### ICRC84 actor type definition
 
@@ -34,10 +34,12 @@ The type `ICRC84` can be used as actor type on the caller side effortlessly.
 To declare actor type with ICRC84 and custom functions, you can use:
 
 ```motoko
-  import ICRC84 "mo:icrc-84";
+import ICRC84 "mo:icrc-84";
 
-  let canister : (ICRC84.ICRC84 and actor {
+let canister : (
+  ICRC84.ICRC84 and actor {
     custom_func : shared () -> async ();
-  }) = actor ("<canister id>" : Text);
-```
+  }
+) = actor ("<canister id>" : Text);
 
+```
