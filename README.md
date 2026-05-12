@@ -46,15 +46,18 @@ let canister : (
 
 ### Examples
 
-Examples can be build with:
+Examples can be built with:
 
-```
+```bash
 cd example
 dfx build --check
-```
-or
-```
-cd example
-icp build
+
 ```
 
+or
+
+```bash
+cd example
+icp build
+
+```
