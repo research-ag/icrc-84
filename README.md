@@ -46,14 +46,14 @@ let canister : (
 
 ### Examples
 
-Examples can be build with:
+Examples can be built with:
 
-```
+```motoko
 cd example
 dfx build --check
 ```
 or
-```
+```motoko
 cd example
 icp build
 ```
