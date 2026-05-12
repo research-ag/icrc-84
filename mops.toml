@@ -5,7 +5,7 @@ description = "ICRC-84 support library"
 repository = "https://github.com/research-ag/icrc-84"
 keywords = [ "icrc-84", "principal", "subaccount", "embedding", "icrc-1" ]
 license = "Apache-2.0"
-files = [ "**/*.mo", "**/*.did", "**/*.md" ]
+files = [ "**/*.mo", "**/*.did", "**/*.md", "example/mops.toml", "example/dfx.json" ]
 
 [dependencies]
 core = "2.5.0"
