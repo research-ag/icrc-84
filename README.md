@@ -48,6 +48,7 @@ let canister : (
 
 Examples can be built with:
 
+<<<<<<< HEAD
 ```bash
 cd example
 dfx build --check
