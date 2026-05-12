@@ -43,3 +43,21 @@ let canister : (
 ) = actor ("<canister id>" : Text);
 
 ```
+
+### Examples
+
+Examples can be built with:
+
+```bash
+cd example
+dfx build --check
+
+```
+
+or
+
+```bash
+cd example
+icp build
+
+```
