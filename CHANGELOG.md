@@ -1,10 +1,12 @@
 # Icrc-84 changelog
 
+## 0.1.4
+
+- Update required `moc` version from `1.6.0` to `1.4.0`
+
 ## 0.1.3
 
-### Changed
-
-- Updated `[requirements] moc` from `1.0.0` to `1.6.0`.
+- Update required `moc` version from `1.0.0` to `1.6.0`
 
 ## 0.1.2
 

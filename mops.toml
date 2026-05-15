@@ -1,11 +1,11 @@
 [package]
 name = "icrc-84"
-version = "0.1.3"
+version = "0.1.4"
 description = "ICRC-84 support library"
 repository = "https://github.com/research-ag/icrc-84"
 keywords = [ "icrc-84", "principal", "subaccount", "embedding", "icrc-1" ]
 license = "Apache-2.0"
-files = [ "example/{*.mo,mops.toml}", "icrc-84.{did,md}" ]
+files = [ "**/*.mo", "example/mops.toml", "icrc-84.{did,md}" ]
 
 [dependencies]
 core = "2.5.0"
@@ -14,4 +14,4 @@ core = "2.5.0"
 moc = "1.7.0"
 
 [requirements]
-moc = "1.6.0"
+moc = "1.4.0"
