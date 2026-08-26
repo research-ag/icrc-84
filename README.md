@@ -44,6 +44,10 @@ let canister : (
 
 ```
 
+## License
+
+This project is licensed under the MIT License.
+
 ### Examples
 
 Examples can be built with:
