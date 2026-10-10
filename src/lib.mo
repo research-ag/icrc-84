@@ -51,7 +51,7 @@ module {
           bytes[i + size - 32];
         };
       },
-    ) |> _.toBlob();
+    ).toBlob();
   };
 
   /// Converts the ICRC-1 `Subaccount` back to `Principal`.
@@ -82,8 +82,7 @@ module {
     };
 
     if (start + size != 32) return null;
-    Array.tabulate(size, func(i : Nat) : Nat8 = bytes[start + i])
-    |> _.toBlob()
+    Array.tabulate(size, func(i : Nat) : Nat8 = bytes[start + i]).toBlob()
     |> ?Principal.fromBlob(_);
   };
 
