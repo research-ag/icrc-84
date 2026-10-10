@@ -17,7 +17,7 @@ jobs:
         run: mops toolchain bin moc || mops toolchain use moc latest
 
       - name: Run mops tests
-        run: mops test
+        run: mops test --locked
 
       - name: Build example actor
         working-directory: example
