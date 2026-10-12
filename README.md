@@ -7,7 +7,7 @@ ICRC standard for deposits and withdrawals from financial services
 
 ## Standard Spec
 
-The specification can be found [here](icrc-84.md)
+The specification can be found [here](https://github.com/research-ag/icrc-84/blob/main/icrc-84.md)
 
 ## Implementation
 
@@ -61,3 +61,7 @@ cd example
 icp build
 
 ```
+
+## License
+
+This project is licensed under the MIT License.
