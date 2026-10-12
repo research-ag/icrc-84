@@ -2,7 +2,7 @@
 core = "2.6.2"
 icrc-84 = "../"
 # Replace with:
-# icrc-84 = "0.1.5"
+# icrc-84 = "0.2.0"
 
 [toolchain]
 moc = "2.0.0"

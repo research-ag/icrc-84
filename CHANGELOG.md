@@ -1,6 +1,6 @@
 # Icrc-84 changelog
 
-## 0.1.5
+## 0.2.0
 
 - Bump `core` dependency from `2.5.0` to `2.6.2`
 - Replace deprecated `Nat8.fromNat` and `Blob.fromArray` calls
