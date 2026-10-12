@@ -5,11 +5,11 @@ import Lib "mo:icrc-84";
 // an actor file to test library ICRC84 against did declaration.
 // if it implements something differently from library type, it won't compile with an error about "_check" variable type
 // if it implements something differently from did file, github action would fail since produced did file won't match the original one
-persistent actor class Actor() = self {
+actor class Actor() = self {
 
   transient let _check : Lib.ICRC84 = self;
 
-  public shared query func icrc84_supported_tokens() : async [Principal] = async [];
+  public shared query func icrc84_supported_tokens() : async [Principal] { [] };
 
   public shared query func icrc84_token_info(_ : Principal) : async Lib.TokenInfo {
     Runtime.trap("STUB");
@@ -21,7 +21,7 @@ persistent actor class Actor() = self {
       credit : Int;
       tracked_deposit : ?Nat;
     },
-  )] = async [];
+  )] { [] };
 
   public shared func icrc84_notify(_ : { token : Principal }) : async Lib.NotifyResponse {
     Runtime.trap("STUB");

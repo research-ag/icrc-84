@@ -15,6 +15,7 @@
 
 import Array "mo:core/Array";
 import Blob "mo:core/Blob";
+import Nat "mo:core/Nat";
 import Nat8 "mo:core/Nat8";
 import Principal "mo:core/Principal";
 
@@ -34,7 +35,7 @@ module {
   /// Traps if the Blob representation of `p` is longer than 29 bytes.
   /// All valid IC principals satisfy this bound.
   public func toSubaccount(p : Principal) : Subaccount {
-    let bytes = Blob.toArray(p.toBlob());
+    let bytes = p.toBlob().toArray();
     let size = bytes.size();
 
     assert size <= 29;
@@ -45,12 +46,12 @@ module {
         if (i + size < 31) {
           0;
         } else if (i + size == 31) {
-          Nat8.fromNat(size);
+          size.toNat8();
         } else {
           bytes[i + size - 32];
         };
       },
-    ) |> Blob.fromArray(_);
+    ).toBlob();
   };
 
   /// Converts the ICRC-1 `Subaccount` back to `Principal`.
@@ -67,7 +68,7 @@ module {
   ///
   /// Traps if `subaccount` is not exactly 32 bytes long.
   public func toPrincipal(subaccount : Subaccount) : ?Principal {
-    let bytes = Blob.toArray(subaccount);
+    let bytes = subaccount.toArray();
     assert bytes.size() == 32;
 
     let (start, size) = do {
@@ -81,8 +82,7 @@ module {
     };
 
     if (start + size != 32) return null;
-    Array.tabulate(size, func(i : Nat) : Nat8 = bytes[start + i])
-    |> Blob.fromArray(_)
+    Array.tabulate(size, func(i : Nat) : Nat8 = bytes[start + i]).toBlob()
     |> ?Principal.fromBlob(_);
   };
 
